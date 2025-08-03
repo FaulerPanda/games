@@ -57,14 +57,16 @@ enum GameState {
     Disabled,
     Loading,
     Game,
+    GameOver,
 }
 
 pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(PongState::Game), game_setup)
-            .add_systems(OnEnter(GameState::Loading), pong_setup)
             .add_systems(OnExit(GameState::Game), despawn_screen::<OnGameScreen>)
+            .add_systems(OnEnter(GameState::Loading), pong_setup)
+            .add_systems(OnEnter(GameState::GameOver), game_exit)
             .add_systems(Update, countdown.run_if(in_state(GameState::Loading)))
             .add_systems(
                 Update,
@@ -84,6 +86,11 @@ impl Plugin for GamePlugin {
 fn game_setup(mut commands: Commands, mut game_state: ResMut<NextState<GameState>>) {
     commands.insert_resource(GameTimer(Timer::from_seconds(2.0, TimerMode::Once)));
     game_state.set(GameState::Loading);
+}
+
+fn game_exit(mut game_state: ResMut<NextState<PongState>>) {
+    println!("Game over");
+    game_state.set(PongState::Menu);
 }
 
 fn pong_setup(
@@ -266,7 +273,7 @@ fn check_collision(
 fn exit_conditions(
     exit_query: Query<&Transform, With<ExitCondition>>,
     ball: Single<&Transform, With<Ball>>,
-    mut game_state: ResMut<NextState<PongState>>,
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
     for exit_transform in exit_query {
         let collision = ball_collision(
@@ -278,8 +285,7 @@ fn exit_conditions(
         );
         if let Some(collision) = collision {
             if collision == Collision::Top {
-                println!("Game over");
-                game_state.set(PongState::Menu);
+                game_state.set(GameState::GameOver);
             }
         }
     }
