@@ -1,21 +1,25 @@
+/// the whole logic of the pong game
 use bevy::{
     math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume},
     prelude::*,
 };
 
-use crate::enums::PongState;
+use crate::enums::GameState;
 use crate::functions::despawn_screen;
 
+// paddle constanten
 const PADDLE_COLOR: Color = Color::srgb(1.0, 1.0, 1.0);
 const PADDLE_SIZE: Vec2 = Vec2::new(100.0, 30.0);
 const PADDLE_SPEED: f32 = 500.0;
 
+// ball constanten
 const BALL_COLOR: Color = Color::srgb(1.0, 0.0, 0.0);
 const BALL_DIAMETER: f32 = 30.0;
 const BALL_SPEED: f32 = 500.0;
 const BALL_SPAWN_POINT: Vec3 = Vec3::new(0.0, 50.0, 0.0);
 const INITIAL_BALL_DIRECTION: Vec2 = Vec2::new(0.5, 0.5);
 
+// wall constanten
 const WALL_COLOR: Color = Color::srgb(0.8, 0.8, 0.8);
 
 #[derive(Component)]
@@ -31,17 +35,24 @@ struct BottomWall;
 #[derive(Component)]
 struct TopWall;
 
+/// Velocity related objects need this
 #[derive(Component, Deref, DerefMut)]
 struct Velocity(Vec2);
+
+/// Collition related objects need this
 #[derive(Component)]
 struct Collider;
 #[derive(Component)]
+/// Objects related to the end of the game
 struct ExitCondition;
 #[derive(Component)]
+/// Objects on the Screen need this
 struct OnGameScreen;
 #[derive(Resource, Deref, DerefMut)]
+/// timer vor the game
 struct GameTimer(Timer);
 
+/// Position of the walls for the game surface
 #[allow(unused)]
 #[derive(Resource)]
 struct GameSurface {
@@ -51,8 +62,9 @@ struct GameSurface {
     bottom: f32,
 }
 
+/// Game state of pong
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-enum GameState {
+enum PongState {
     #[default]
     Disabled,
     Loading,
@@ -60,14 +72,15 @@ enum GameState {
     GameOver,
 }
 
+/// plugin to run the pong game after selection
 pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(PongState::Game), game_setup)
-            .add_systems(OnExit(GameState::Game), despawn_screen::<OnGameScreen>)
-            .add_systems(OnEnter(GameState::Loading), pong_setup)
-            .add_systems(OnEnter(GameState::GameOver), game_exit)
-            .add_systems(Update, countdown.run_if(in_state(GameState::Loading)))
+        app.add_systems(OnEnter(GameState::Game), game_setup)
+            .add_systems(OnExit(PongState::Game), despawn_screen::<OnGameScreen>)
+            .add_systems(OnEnter(PongState::Loading), pong_setup)
+            .add_systems(OnEnter(PongState::GameOver), game_exit)
+            .add_systems(Update, countdown.run_if(in_state(PongState::Loading)))
             .add_systems(
                 Update,
                 (
@@ -77,28 +90,34 @@ impl Plugin for GamePlugin {
                     exit_conditions,
                 )
                     .chain()
-                    .run_if(in_state(GameState::Game)),
+                    .run_if(in_state(PongState::Game)),
             )
-            .init_state::<GameState>();
+            .init_state::<PongState>();
     }
 }
 
-fn game_setup(mut commands: Commands, mut game_state: ResMut<NextState<GameState>>) {
+/// change the GameState to PongState and start a timer before the game starts
+fn game_setup(mut commands: Commands, mut game_state: ResMut<NextState<PongState>>) {
     commands.insert_resource(GameTimer(Timer::from_seconds(2.0, TimerMode::Once)));
-    game_state.set(GameState::Loading);
+    game_state.set(PongState::Loading);
 }
 
-fn game_exit(mut game_state: ResMut<NextState<PongState>>) {
+/// change the PongState to GameState to swithc to the Menu
+// FIXME nicht in Menu sondern endscreen(PongState::EndScreen)
+fn game_exit(mut game_state: ResMut<NextState<GameState>>) {
     println!("Game over");
-    game_state.set(PongState::Menu);
+    game_state.set(GameState::Menu);
 }
 
+/// spawns the window, the ball and the paddle
+// FIXME window shoud get generate in the main menu
 fn pong_setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     windows: Query<&Window>,
 ) {
+    // get window positions
     let window = match windows.single() {
         Ok(window) => window,
         Err(e) => {
@@ -106,6 +125,8 @@ fn pong_setup(
             return;
         }
     };
+
+    // set window positions
     let width = window.width() / 2.0;
     let height = window.height() / 2.0;
     let thickness = 1.0;
@@ -118,9 +139,9 @@ fn pong_setup(
 
     //Walls
     commands.spawn((
-        Sprite::from_color(WALL_COLOR, Vec2::ONE),
+        Sprite::from_color(WALL_COLOR, Vec2::ONE), // generate square
         Transform {
-            translation: Vec3::new(-width, 0.0, 0.0),
+            translation: Vec3::new(-width, 0.0, 0.0), // position
             scale: Vec3::new(thickness, height * 2.0, 1.0),
             ..default()
         },
@@ -177,26 +198,29 @@ fn pong_setup(
 
     //Ball
     commands.spawn((
-        Mesh2d(meshes.add(Circle::default())),
+        Mesh2d(meshes.add(Circle::default())), // generate circle
         MeshMaterial2d(materials.add(BALL_COLOR)),
         Transform::from_translation(BALL_SPAWN_POINT)
             .with_scale(Vec2::splat(BALL_DIAMETER).extend(1.0)),
         Ball,
-        Velocity(INITIAL_BALL_DIRECTION.normalize() * BALL_SPEED),
+        Velocity(INITIAL_BALL_DIRECTION.normalize() * BALL_SPEED), // sets the speed + direction
         OnGameScreen,
     ));
 }
 
+/// wait ... seconds bevor the game starts
+/// switch from PongState::GameLoading to PongState::Game
 fn countdown(
-    mut game_state: ResMut<NextState<GameState>>,
+    mut game_state: ResMut<NextState<PongState>>,
     time: Res<Time>,
     mut timer: ResMut<GameTimer>,
 ) {
     if timer.tick(time.delta()).finished() {
-        game_state.set(GameState::Game);
+        game_state.set(PongState::Game);
     }
 }
 
+/// logic for moving the paddle
 fn move_paddle(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut paddle: Single<&mut Transform, With<Paddle>>,
@@ -219,6 +243,7 @@ fn move_paddle(
     paddle.translation.x = new_paddle_position.clamp(left_wall, right_wall);
 }
 
+/// all objects with struct velocity get moved her
 fn velocity_update(mut query: Query<(&mut Transform, &Velocity)>, time: Res<Time>) {
     for (mut transform, velocity) in &mut query {
         transform.translation.x += velocity.x * time.delta_secs();
@@ -226,6 +251,7 @@ fn velocity_update(mut query: Query<(&mut Transform, &Velocity)>, time: Res<Time
     }
 }
 
+/// saves position where the collission is detected
 #[derive(Debug, PartialEq, Clone, Copy)]
 enum Collision {
     Left,
@@ -234,6 +260,8 @@ enum Collision {
     Bottom,
 }
 
+/// check collision with ball and objects that have the collider struct
+/// change their direction to the opposite
 fn check_collision(
     ball: Single<(&Transform, &mut Velocity), With<Ball>>,
     collider_query: Query<&Transform, With<Collider>>,
@@ -270,10 +298,12 @@ fn check_collision(
     }
 }
 
+/// check if ball colides with the bottom wall
+/// if true change PongState to PongState::GameOver
 fn exit_conditions(
     exit_query: Query<&Transform, With<ExitCondition>>,
     ball: Single<&Transform, With<Ball>>,
-    mut game_state: ResMut<NextState<GameState>>,
+    mut game_state: ResMut<NextState<PongState>>,
 ) {
     for exit_transform in exit_query {
         let collision = ball_collision(
@@ -285,12 +315,13 @@ fn exit_conditions(
         );
         if let Some(collision) = collision {
             if collision == Collision::Top {
-                game_state.set(GameState::GameOver);
+                game_state.set(PongState::GameOver);
             }
         }
     }
 }
 
+/// check ball collision with one specific object which is got from check_collison()
 fn ball_collision(ball: BoundingCircle, bounding_box: Aabb2d) -> Option<Collision> {
     if !ball.intersects(&bounding_box) {
         return None;

@@ -5,7 +5,7 @@ pub mod loading_screen;
 pub mod menu;
 pub mod structs;
 
-use crate::enums::PongState;
+use crate::enums::GameState;
 
 use bevy::prelude::*;
 use bevy_framepace::{FramepacePlugin, FramepaceSettings, Limiter};
@@ -37,11 +37,12 @@ fn main() {
         .add_plugins(MenuPlugin)
         .add_plugins(GamePlugin)
         .add_plugins(LoadingScreenPlugin)
-        .init_state::<PongState>()
+        .init_state::<GameState>()
         .add_systems(Startup, setup)
         .run();
 }
 
+/// spawns the game Camera
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
 }

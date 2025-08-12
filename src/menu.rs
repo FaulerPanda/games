@@ -1,21 +1,23 @@
 use bevy::prelude::*;
 
-use crate::enums::PongState;
+use crate::enums::GameState;
 use crate::functions::despawn_screen;
 
 const NORMAL_BUTTON: Color = Color::srgb(0.5, 0.5, 0.5);
 const HOVERED_BUTTON: Color = Color::srgb(0.9, 0.9, 0.9);
 
+/// all components on the MainScreen need this
 #[derive(Component)]
 struct OnMainScreen;
+
+/// button actions
 #[derive(Component)]
-// struct Button;
-// #[derive(Component)]
 enum MenuButtonAction {
     Play,
     Quit,
 }
 
+/// menustate
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 enum MenuState {
     Main,
@@ -23,24 +25,27 @@ enum MenuState {
     Disabled,
 }
 
+/// menu plugin
 pub struct MenuPlugin;
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<MenuState>()
-            .add_systems(OnEnter(PongState::Menu), menu_setup)
+            .add_systems(OnEnter(GameState::Menu), menu_setup)
             .add_systems(OnEnter(MenuState::Main), main_menu_setup)
             .add_systems(OnExit(MenuState::Main), despawn_screen::<OnMainScreen>)
             .add_systems(
                 Update,
-                (button_system, button_action).run_if(in_state(PongState::Menu)),
+                (button_system, button_action).run_if(in_state(GameState::Menu)),
             );
     }
 }
 
+/// change GameState::Menu to MenuState::Main
 fn menu_setup(mut menu_state: ResMut<NextState<MenuState>>) {
     menu_state.set(MenuState::Main);
 }
 
+/// spawns all elements for the mainmenu
 fn main_menu_setup(mut commands: Commands) {
     let button_node = Node {
         width: Val::Px(200.0),
@@ -119,6 +124,7 @@ fn main_menu_setup(mut commands: Commands) {
     ));
 }
 
+/// change the collors of the button if pressed or hovered
 fn button_system(
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),
@@ -134,6 +140,7 @@ fn button_system(
     }
 }
 
+/// change the state depends on wich button is pressed
 fn button_action(
     interaction_query: Query<
         (&Interaction, &MenuButtonAction),
@@ -141,7 +148,7 @@ fn button_action(
     >,
     mut app_exit: EventWriter<AppExit>,
     mut menu_state: ResMut<NextState<MenuState>>,
-    mut game_state: ResMut<NextState<PongState>>,
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, menu_button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
@@ -150,7 +157,7 @@ fn button_action(
                     app_exit.write(AppExit::Success);
                 }
                 MenuButtonAction::Play => {
-                    game_state.set(PongState::Game);
+                    game_state.set(GameState::Game);
                     menu_state.set(MenuState::Disabled);
                 }
             }
