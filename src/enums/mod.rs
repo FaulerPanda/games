@@ -5,5 +5,6 @@ pub enum GameState {
     #[default]
     LoadingScreen,
     Menu,
-    Game,
+    Pong,
+    Boogle,
 }

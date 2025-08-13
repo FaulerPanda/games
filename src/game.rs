@@ -73,10 +73,10 @@ enum PongState {
 }
 
 /// plugin to run the pong game after selection
-pub struct GamePlugin;
-impl Plugin for GamePlugin {
+pub struct PongPlugin;
+impl Plugin for PongPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::Game), game_setup)
+        app.add_systems(OnEnter(GameState::Pong), game_setup)
             .add_systems(OnExit(PongState::Game), despawn_screen::<OnGameScreen>)
             .add_systems(OnEnter(PongState::Loading), pong_setup)
             .add_systems(OnEnter(PongState::GameOver), game_exit)
@@ -96,16 +96,17 @@ impl Plugin for GamePlugin {
     }
 }
 
-/// change the GameState to PongState and start a timer before the game starts
+/// change the PongState::dissabled to PongState::Loading
+/// switch from GameState to PongState
 fn game_setup(mut commands: Commands, mut game_state: ResMut<NextState<PongState>>) {
     commands.insert_resource(GameTimer(Timer::from_seconds(2.0, TimerMode::Once)));
     game_state.set(PongState::Loading);
 }
 
 /// change the PongState to GameState to swithc to the Menu
-// FIXME nicht in Menu sondern endscreen(PongState::EndScreen)
 fn game_exit(mut game_state: ResMut<NextState<GameState>>) {
     println!("Game over");
+    // FIXME nicht in Menu sondern endscreen(PongState::EndScreen)
     game_state.set(GameState::Menu);
 }
 
