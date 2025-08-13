@@ -39,7 +39,7 @@ fn loading_screen_setup(mut commands: Commands, asset_server: Res<AssetServer>) 
         children![(
             ImageNode::new(turtle),
             Node {
-                // This will set the logo to be 200px wide, and auto adjust its height
+                // This will set the logo to be 500px wide, and auto adjust its height
                 width: Val::Px(500.0),
                 ..default()
             },
