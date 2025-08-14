@@ -46,7 +46,7 @@ fn game_menu_setup(mut commands: Commands) {
                     Button,
                     button_node.clone(),
                     BackgroundColor(NORMAL_BUTTON),
-                    MenuButtonAction::Quit,
+                    MenuButtonAction::Boogle,
                     children![Text::new("Boogle")]
                 ),
                 (
