@@ -33,7 +33,9 @@ pub fn menu_button_node() -> Node {
         width: Val::Px(200.0),
         height: Val::Px(65.0),
         margin: UiRect::all(Val::Px(20.0)),
+        // horizontale ausrichtung
         justify_content: JustifyContent::Center,
+        // vertikale ausrichtung
         align_items: AlignItems::Center,
         ..default()
     }
@@ -82,7 +84,6 @@ pub fn button_action(
                 MenuButtonAction::Boogle => {
                     menu_state.set(MenuState::Disabled);
                     game_state.set(GameState::Boogle);
-                    print!("Noch passiert hier nichts")
                 }
             }
         }

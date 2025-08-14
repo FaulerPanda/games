@@ -98,9 +98,9 @@ impl Plugin for PongPlugin {
 
 /// change the PongState::dissabled to PongState::Loading
 /// switch from GameState to PongState
-fn game_setup(mut commands: Commands, mut game_state: ResMut<NextState<PongState>>) {
+fn game_setup(mut commands: Commands, mut pong_state: ResMut<NextState<PongState>>) {
     commands.insert_resource(GameTimer(Timer::from_seconds(2.0, TimerMode::Once)));
-    game_state.set(PongState::Loading);
+    pong_state.set(PongState::Loading);
 }
 
 /// change the PongState to GameState to swithc to the Menu

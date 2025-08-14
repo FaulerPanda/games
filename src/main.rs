@@ -1,16 +1,16 @@
 pub mod enums;
 pub mod functions;
-pub mod game;
+pub mod games;
 pub mod loading_screen;
 pub mod menus;
 pub mod structs;
 
-use crate::enums::GameState;
+use crate::{enums::GameState, games::boogle::game::BooglePlugin};
 
 use bevy::prelude::*;
 use bevy_framepace::{FramepacePlugin, FramepaceSettings, Limiter};
 
-use game::PongPlugin;
+use games::pong::game::PongPlugin;
 use loading_screen::LoadingScreenPlugin;
 use menus::{game_menu::GameMenuPlugin, main_menu::MainMenuPlugin};
 
@@ -37,6 +37,7 @@ fn main() {
         .add_plugins(MainMenuPlugin)
         .add_plugins(GameMenuPlugin)
         .add_plugins(PongPlugin)
+        .add_plugins(BooglePlugin)
         .add_plugins(LoadingScreenPlugin)
         .init_state::<GameState>()
         .add_systems(Startup, setup)
