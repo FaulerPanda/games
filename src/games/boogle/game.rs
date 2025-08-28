@@ -88,139 +88,180 @@ fn boogle_setup(mut commands: Commands) {
         ..default()
     };
 
-    commands.spawn((
-        Node {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            flex_direction: FlexDirection::Column,
-            ..default()
-        },
-        OnGameScreen,
-        children![
-            (
-                // first row
-                Node {
+    commands
+        .spawn((
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            OnGameScreen,
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn(Node {
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
                     ..default()
-                },
-                children![
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[0].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[1].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[2].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[3].to_string()), letter_text_font.clone())]
-                    )
-                ]
-            ),
-            (
-                // second row
-                Node {
+                })
+                .with_children(|parent| {
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[0].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[1].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[2].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[3].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                });
+            parent
+                .spawn(Node {
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
                     ..default()
-                },
-                children![
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[4].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[5].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[6].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[7].to_string()), letter_text_font.clone())]
-                    )
-                ]
-            ),
-            (
-                // third row
-                Node {
+                })
+                .with_children(|parent| {
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[4].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[5].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[6].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[7].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                });
+            parent
+                .spawn(Node {
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
                     ..default()
-                },
-                children![
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[8].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[9].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[10].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[11].to_string()), letter_text_font.clone())]
-                    )
-                ]
-            ),
-            (
-                // fourth row
-                Node {
+                })
+                .with_children(|parent| {
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[8].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[9].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[10].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[11].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                });
+            parent
+                .spawn(Node {
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
                     ..default()
-                },
-                children![
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[12].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[13].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[14].to_string()), letter_text_font.clone())]
-                    ),
-                    (
-                        dice_node.clone(),
-                        BackgroundColor(NORMAL_BUTTON),
-                        children![(Text::new(letters[15].to_string()), letter_text_font.clone())]
-                    )
-                ]
-            ),
-        ],
-    ));
+                })
+                .with_children(|parent| {
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[12].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[13].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[14].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                    parent
+                        .spawn((dice_node.clone(), BackgroundColor(NORMAL_BUTTON)))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new(letters[15].to_string()),
+                                letter_text_font.clone(),
+                            ));
+                        });
+                });
+        });
 }
 
 /// give a random letter out of dice list
