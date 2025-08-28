@@ -34,37 +34,46 @@ fn menu_setup(mut menu_state: ResMut<NextState<MenuState>>) {
 fn main_menu_setup(mut commands: Commands) {
     let button_node = menu_button_node();
 
-    commands.spawn((
-        Node {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            ..default()
-        },
-        OnMainScreen,
-        children![(
+    commands
+        .spawn((
             Node {
-                flex_direction: FlexDirection::Column,
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
                 ..default()
             },
-            children![
-                (
-                    Button,
-                    button_node.clone(),
-                    BackgroundColor(NORMAL_BUTTON),
-                    MenuButtonAction::Games,
-                    children![Text::new("Game selection"),]
-                ),
-                (
-                    Button,
-                    button_node.clone(),
-                    BackgroundColor(NORMAL_BUTTON),
-                    MenuButtonAction::Quit,
-                    children![Text::new("Quit")]
-                )
-            ]
-        )],
-    ));
+            OnMainScreen,
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn(Node {
+                    flex_direction: FlexDirection::Column,
+                    align_items: AlignItems::Center,
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent
+                        .spawn((
+                            Button,
+                            button_node.clone(),
+                            BackgroundColor(NORMAL_BUTTON),
+                            MenuButtonAction::Games,
+                        ))
+                        .with_children(|parent| {
+                            parent.spawn(Text::new("Game selection"));
+                        });
+
+                    parent
+                        .spawn((
+                            Button,
+                            button_node.clone(),
+                            BackgroundColor(NORMAL_BUTTON),
+                            MenuButtonAction::Quit,
+                        ))
+                        .with_children(|parent| {
+                            parent.spawn(Text::new("Quit"));
+                        });
+                });
+        });
 }
